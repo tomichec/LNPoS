@@ -28,4 +28,9 @@ Enter your LNBits details<br/>
 
 <img src="https://i.imgur.com/QIilvsM.png" width="50%">
 
+### Notes
+
+To create a splash image, you can use the
+[Online Image to C Array Converter](https://littlevgl.com/image-to-c-array).
+
 ### <a href="https://github.com/arcbtc/M5StackSats">Old version</a>
