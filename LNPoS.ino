@@ -1,5 +1,3 @@
-
-
 //////////////LOAD LIBRARIES////////////////
 
 #include <M5Stack.h>
@@ -52,7 +50,8 @@ float conversion;
   
 /////////////////////SETUP////////////////////////
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   M5.begin();
   M5.Lcd.drawBitmap(0, 0, 320, 240, (uint8_t *)logo_map);
@@ -63,7 +62,8 @@ void setup() {
 
 ///////////////////MAIN LOOP//////////////////////
 
-void loop() {
+void loop() 
+{
   page_input();
   cntr = "1";
   while (cntr == "1"){
@@ -114,9 +114,7 @@ void loop() {
   }
 }
 
-
-//////////////////M5 STACK///////////////////
-
+//////////////////M5STACK///////////////////
 
 void input_screen()
 {
@@ -146,8 +144,8 @@ void processing_screen()
  
 }
 
-void get_keypad(){
-
+void get_keypad()
+{
    if(digitalRead(KEYBOARD_INT) == LOW) {
     Wire.requestFrom(KEYBOARD_I2C_ADDR, 1);  // request 1 byte from keyboard
     while (Wire.available()) { 
@@ -222,7 +220,8 @@ void qrdisplay_screen()
 
 //////////////////OPENNODE CALL///////////////////
 
-void on_rates(){
+void on_rates()
+{
   WiFiClientSecure client;
   if (!client.connect("api.opennode.co", httpsPort)) {
     return;
@@ -249,7 +248,8 @@ void on_rates(){
 
 //////////////////LNBITS CALLS///////////////////
 
-void getinvoice(String nosats) {
+void getinvoice(String nosats) 
+{
   WiFiClientSecure client;
   const char* lnbitsserver = lnbits_server;
   const char* invoicekey = invoice_key;
@@ -297,14 +297,11 @@ void getinvoice(String nosats) {
 }
 
 
-void checkinvoice(){
-
+void checkinvoice()
+{
   WiFiClientSecure client;
   const char* lnbitsserver = lnbits_server;
   const char* invoicekey = invoice_key;
-
-  Serial.println(lnbits_server);
-  Serial.println(invoice_key);
   if (!client.connect(lnbitsserver, 443)){
     down = true;
     return;   
@@ -327,7 +324,6 @@ void checkinvoice(){
     }
   }
   String line = client.readString();
-  Serial.println(line);
   StaticJsonDocument<200> doc;
   DeserializationError error = deserializeJson(doc, line);
   if (error) {
@@ -339,8 +335,8 @@ void checkinvoice(){
   paid = charPaid;
 }
 
-void portal(){
-
+void portal()
+{
   WiFiManager wm;
   Serial.println("mounting FS...");
   while(!SPIFFS.begin(true)){
@@ -419,7 +415,8 @@ void portal(){
   Serial.println(WiFi.subnetMask());
 }
 
-void saveConfigCallback () {
+void saveConfigCallback ()
+{
   processing_screen();
   Serial.println("Should save config");
   shouldSaveConfig = true;
