@@ -26,4 +26,6 @@ Press A on the M5Stack during "INITIALIZING" screen<br/>
 Connect to the WiFi captive portal SSID: "⚡lnpos⚡" PASS: "password1"<br/>
 Enter your LNBits details<br/>
 
+<img src="https://i.imgur.com/QIilvsM.png" width="50%">
+
 ### <a href="https://github.com/arcbtc/M5StackSats">Old version</a>
