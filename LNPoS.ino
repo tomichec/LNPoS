@@ -36,7 +36,20 @@ bool down = false;
 const char* spiffcontent = "";
 String spiffing; 
 
-
+String choice;
+String payhash;
+String on_sub_currency = on_currency.substring(3);
+String key_val;
+String cntr = "0";
+String inputs;
+int keysdec;
+int keyssdec;
+float temp;  
+String fiat;
+float satoshis;
+String nosats;
+float conversion;
+  
 /////////////////////SETUP////////////////////////
 
 void setup() {
@@ -170,7 +183,7 @@ void lnbits_screen()
   M5.Lcd.setCursor(10, 90);
   M5.Lcd.setTextSize(3);
   M5.Lcd.setTextColor(TFT_BLACK);
-  M5.Lcd.println("POWERED BY LNBITS");
+  M5.Lcd.println("INITIALIZING");
 }
 
 void portal_screen()
