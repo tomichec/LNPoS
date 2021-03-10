@@ -22,7 +22,7 @@ Upload code!
 
 ### Usage
 
-Press A on the M5Stack during "INIALIZING" screen<br/>
+Press A on the M5Stack during "INITIALIZING" screen<br/>
 Connect to the WiFi captive portal SSID: "⚡lnpos⚡" PASS: "password1"<br/>
 Enter your LNBits details<br/>
 
