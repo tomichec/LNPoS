@@ -1,6 +1,12 @@
 
 # LNPoS
 
+![image](https://user-images.githubusercontent.com/33088785/110760353-883db880-8246-11eb-92bb-b371a629292e.png)
+
+### Hardware
+
+https://shop.pimoroni.com/products/m5stack-faces-kit-pocket-computer-with-keyboard-game-calculator
+
 ### Installation
 
 Install Arduino IDE: 
