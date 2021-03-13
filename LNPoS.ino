@@ -1,4 +1,4 @@
-//////////////LOAD LIBRARIES////////////////
+////////LOAD LIBRARIES/DEFINE VARIABLES///////////
 
 #include <M5Stack.h>
 #include "FS.h"
@@ -7,17 +7,13 @@
 #include <WiFiClientSecure.h>
 #include "SPIFFS.h"
 
-/////////////////LOAD SPLASH///////////////////
-
 #include "logo.c"
 
-/////////////////SOME DEFINES///////////////////
-
-#define LED_PIN 25
-  
-/////////////////SOME VARIABLES///////////////////
+#define KEYBOARD_I2C_ADDR     0X08
+#define KEYBOARD_INT          5
 
 char lnbits_server[40] = "lnbits.com";
+char currency[10] = "GBP";
 char invoice_key[500] = "";
 char lnbits_description[100] = "";
 char lnbits_amount[500] = "1000";
@@ -36,7 +32,6 @@ String spiffing;
 
 String choice;
 String payhash;
-String on_sub_currency = on_currency.substring(3);
 String key_val;
 String cntr = "0";
 String inputs;
@@ -64,25 +59,25 @@ void setup()
 
 void loop() 
 {
-  page_input();
+  input_screen();
   cntr = "1";
   while (cntr == "1"){
     M5.update();
     get_keypad(); 
     if (M5.BtnC.wasReleased()) {
-      page_processing();
+      processing_screen();
       getinvoice(nosats);
       qrdisplay_screen();
-      checkpaid();
+      checkinvoice();
       key_val = "";
       inputs = "";
     }
     else if (M5.BtnB.wasReleased()) {
-      page_processing();
+      processing_screen();
       nosats = "0";
       getinvoice(nosats);
       qrdisplay_screen();
-      checkpaid();
+      checkinvoice();
       key_val = "";
       inputs = "";
     }
@@ -90,7 +85,7 @@ void loop()
       M5.Lcd.fillScreen(BLACK);
       M5.Lcd.setCursor(0, 0);
       M5.Lcd.setTextColor(TFT_WHITE);
-      page_input();
+      input_screen();
       key_val = "";
       inputs = "";  
       nosats = "";
@@ -124,7 +119,7 @@ void input_screen()
   M5.Lcd.setCursor(0, 40);
   M5.Lcd.println("Amount then C");
   M5.Lcd.println("");
-  M5.Lcd.println(on_currency.substring(3) + ": ");
+  M5.Lcd.println(String(currency) + ": ");
   M5.Lcd.println("");
   M5.Lcd.println("SATS: ");
   M5.Lcd.println("");
@@ -164,15 +159,6 @@ void get_keypad()
       }
     }
   }
-}
-
-void processing_screen()
-{ 
-  M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.setCursor(40, 80);
-  M5.Lcd.setTextSize(4);
-  M5.Lcd.setTextColor(TFT_WHITE);
-  M5.Lcd.println("PROCESSING");
 }
 
 void lnbits_screen()
@@ -223,7 +209,7 @@ void qrdisplay_screen()
 void on_rates()
 {
   WiFiClientSecure client;
-  if (!client.connect("api.opennode.co", httpsPort)) {
+  if (!client.connect("api.opennode.co", 443)) {
     return;
   }
 
@@ -242,7 +228,7 @@ void on_rates()
     const size_t capacity = 169*JSON_OBJECT_SIZE(1) + JSON_OBJECT_SIZE(168) + 3800;
     DynamicJsonDocument doc(capacity);
     deserializeJson(doc, line);
-    conversion = doc["data"][on_currency][on_currency.substring(3)]; 
+    conversion = doc["data"][String(currency) + "BTC"][currency]; 
 
 }
 
@@ -377,9 +363,11 @@ void portal()
   WiFiManagerParameter custom_lnbits_server("server", "LNbits server", lnbits_server, 40);
   WiFiManagerParameter custom_lnbits_description("description", "Memo", lnbits_description, 200);
   WiFiManagerParameter custom_invoice_key("invoice", "LNbits invoice key", invoice_key, 500);
+  WiFiManagerParameter custom_currency("currency", "Fiat currency to use", currency, 10);
   wm.addParameter(&custom_lnbits_server);
   wm.addParameter(&custom_lnbits_description);
   wm.addParameter(&custom_invoice_key);
+  wm.addParameter(&custom_currency);
 
 //IF RESET WAS TRIGGERED, RUN PORTAL AND WRITE FILES
   if (!wm.autoConnect("⚡LNPoS⚡", "password1")) {
@@ -392,12 +380,14 @@ void portal()
   strcpy(lnbits_server, custom_lnbits_server.getValue());
   strcpy(lnbits_description, custom_lnbits_description.getValue());
   strcpy(invoice_key, custom_invoice_key.getValue());
+  strcpy(currency, custom_currency.getValue());
   if (shouldSaveConfig) {
     Serial.println("saving config");
     DynamicJsonDocument json(1024);
     json["lnbits_server"] = lnbits_server;
     json["lnbits_description"]   = lnbits_description;
     json["invoice_key"]   = invoice_key;
+    json["currency"]   = currency;
 
     File configFile = SPIFFS.open("/config.txt", "w");
     if (!configFile) {
