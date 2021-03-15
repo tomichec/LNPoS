@@ -54,6 +54,7 @@ void setup()
   delay(3000);
   pressa_screen();
   portal();
+  on_rates();
 }
 
 ///////////////////MAIN LOOP//////////////////////
@@ -218,14 +219,16 @@ void qrdisplay_screen()
 
 void on_rates()
 {
+  
   WiFiClientSecure client;
-  if (!client.connect("api.opennode.co", 443)) {
+  if (!client.connect("api.opennode.com", 443)) {
+    Serial.println("failed");
     return;
   }
 
   String url = "/v1/rates";
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-               "Host: api.opennode.co\r\n" +
+               "Host: api.opennode.com\r\n" +
                "User-Agent: ESP32\r\n" +
                "Connection: close\r\n\r\n");
   while (client.connected()) {
@@ -238,7 +241,9 @@ void on_rates()
     const size_t capacity = 169*JSON_OBJECT_SIZE(1) + JSON_OBJECT_SIZE(168) + 3800;
     DynamicJsonDocument doc(capacity);
     deserializeJson(doc, line);
+    Serial.println(line);
     conversion = doc["data"][String(currency) + "BTC"][currency]; 
+    Serial.println(conversion);
 
 }
 
@@ -252,6 +257,7 @@ void getinvoice(String nosats)
   const char* lnbitsdescription = lnbits_description;
 
   if (!client.connect(lnbitsserver, 443)){
+    Serial.println("failed");
     down = true;
     return;   
   }
