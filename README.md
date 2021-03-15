@@ -18,6 +18,7 @@ Install ESP32 boards:
 https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md
 
 Install libraries:
+- lv_arduino
 - WiFimanager
 - M5Core2
 - ArduinoJson

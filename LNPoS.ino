@@ -17,6 +17,7 @@ char currency[10] = "GBP";
 char invoice_key[500] = "";
 char lnbits_description[100] = "";
 char lnbits_amount[500] = "1000";
+char wifi_password[25] = "password1";
 char high_pin[5] = "16";
 char time_pin[20] = "3000";
 char static_ip[16] = "10.0.1.56";
@@ -47,11 +48,11 @@ float conversion;
 
 void setup() 
 {
-  Serial.begin(115200);
   M5.begin();
+  Wire.begin();
   M5.Lcd.drawBitmap(0, 0, 320, 240, (uint8_t *)logo_map);
   delay(3000);
-  lnbits_screen();
+  pressa_screen();
   portal();
 }
 
@@ -177,6 +178,15 @@ void portal_screen()
   M5.Lcd.setTextSize(3);
   M5.Lcd.setTextColor(TFT_WHITE);
   M5.Lcd.println("PORTAL LAUNCHED");
+}
+
+void pressa_screen()
+{ 
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.setCursor(10, 80);
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.setTextColor(TFT_WHITE);
+  M5.Lcd.println("PRESS A TO LAUNCH PORTAL");
 }
 
 void complete_screen()
@@ -355,6 +365,8 @@ void portal()
     strcpy(lnbits_server, json["lnbits_server"]);
     strcpy(lnbits_description, json["lnbits_description"]);
     strcpy(invoice_key, json["invoice_key"]);
+    strcpy(currency, json["currency"]);
+    strcpy(wifi_password, json["wifi_password"]);
   }
 
 //ADD PARAMS TO WIFIMANAGER
@@ -364,13 +376,15 @@ void portal()
   WiFiManagerParameter custom_lnbits_description("description", "Memo", lnbits_description, 200);
   WiFiManagerParameter custom_invoice_key("invoice", "LNbits invoice key", invoice_key, 500);
   WiFiManagerParameter custom_currency("currency", "Fiat currency to use", currency, 10);
+  WiFiManagerParameter custom_wifi_password("wifi_password", "Portal password", wifi_password, 10);
   wm.addParameter(&custom_lnbits_server);
   wm.addParameter(&custom_lnbits_description);
   wm.addParameter(&custom_invoice_key);
   wm.addParameter(&custom_currency);
+  wm.addParameter(&custom_wifi_password);
 
 //IF RESET WAS TRIGGERED, RUN PORTAL AND WRITE FILES
-  if (!wm.autoConnect("⚡LNPoS⚡", "password1")) {
+  if (!wm.autoConnect("⚡LNPoS⚡", wifi_password)) {
     Serial.println("failed to connect and hit timeout");
     delay(3000);
     ESP.restart();
@@ -381,6 +395,7 @@ void portal()
   strcpy(lnbits_description, custom_lnbits_description.getValue());
   strcpy(invoice_key, custom_invoice_key.getValue());
   strcpy(currency, custom_currency.getValue());
+  strcpy(wifi_password, custom_currency.getValue());
   if (shouldSaveConfig) {
     Serial.println("saving config");
     DynamicJsonDocument json(1024);
@@ -388,6 +403,7 @@ void portal()
     json["lnbits_description"]   = lnbits_description;
     json["invoice_key"]   = invoice_key;
     json["currency"]   = currency;
+    json["wifi_password"]   = currency;
 
     File configFile = SPIFFS.open("/config.txt", "w");
     if (!configFile) {
