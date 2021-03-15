@@ -70,7 +70,10 @@ void loop()
       processing_screen();
       getinvoice(nosats);
       qrdisplay_screen();
-      checkinvoice();
+      while(!checkinvoice()){
+        delay(3000);
+      }
+      M5.Lcd.fillScreen(BLACK);
       key_val = "";
       inputs = "";
     }
@@ -79,7 +82,10 @@ void loop()
       nosats = "0";
       getinvoice(nosats);
       qrdisplay_screen();
-      checkinvoice();
+      while(!checkinvoice()){
+        delay(3000);
+      }
+      M5.Lcd.fillScreen(BLACK);
       key_val = "";
       inputs = "";
     }
@@ -242,7 +248,7 @@ void on_rates()
     DynamicJsonDocument doc(capacity);
     deserializeJson(doc, line);
     Serial.println(line);
-    conversion = doc["data"][String(currency) + "BTC"][currency]; 
+    conversion = doc["data"]["BTC" + String(currency)][currency]; 
     Serial.println(conversion);
 
 }
@@ -299,14 +305,14 @@ void getinvoice(String nosats)
 }
 
 
-void checkinvoice()
+bool checkinvoice()
 {
   WiFiClientSecure client;
   const char* lnbitsserver = lnbits_server;
   const char* invoicekey = invoice_key;
   if (!client.connect(lnbitsserver, 443)){
     down = true;
-    return;   
+    return false;   
   }
 
   String url = "/api/v1/payments/";
@@ -331,10 +337,10 @@ void checkinvoice()
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
     Serial.println(error.f_str());
-    return;
+    return false;
   }
   bool charPaid = doc["paid"];
-  paid = charPaid;
+  return charPaid;
 }
 
 void portal()
