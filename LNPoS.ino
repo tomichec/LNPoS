@@ -56,8 +56,8 @@ void setup()
   pressa_screen();
   portal();
   on_rates();
-  Serial.println("lnbits server is:")
-  Serial.println(lnbits_server)
+  Serial.println("lnbits server is:");
+  Serial.println(lnbits_server);
   Serial.println("Setup complete");
 }
 
