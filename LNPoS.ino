@@ -55,6 +55,7 @@ void setup()
   pressa_screen();
   portal();
   on_rates();
+  Serial.println("Setup complete");
 }
 
 ///////////////////MAIN LOOP//////////////////////
@@ -225,10 +226,9 @@ void qrdisplay_screen()
 
 void on_rates()
 {
-  
   WiFiClientSecure client;
   if (!client.connect("api.opennode.com", 443)) {
-    Serial.println("failed");
+    Serial.println("failed to connect to api.opennode.com");
     return;
   }
 
@@ -263,7 +263,7 @@ void getinvoice(String nosats)
   const char* lnbitsdescription = lnbits_description;
 
   if (!client.connect(lnbitsserver, 443)){
-    Serial.println("failed");
+    Serial.println("failed to connect to lnbits server");
     down = true;
     return;   
   }
